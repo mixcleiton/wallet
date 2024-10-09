@@ -1,5 +1,7 @@
 package ports
 
+import "br.com.cleiton/wallet/internal/domain/entities"
+
 type ExtractWallet interface {
-	GenerateExtract(id string) error
+	GetExtract(walletId string, documentNumber string, page int, size int) ([]entities.Extract, error)
 }

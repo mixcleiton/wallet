@@ -13,10 +13,11 @@ import (
 
 type walletController struct {
 	createWalletUC ports.CreateWallet
+	listWalletUC   ports.ListWallet
 }
 
-func New(createWalletUC ports.CreateWallet) walletController {
-	return walletController{createWalletUC: createWalletUC}
+func NewWalletController(createWalletUC ports.CreateWallet, listWalletUC ports.ListWallet) walletController {
+	return walletController{createWalletUC: createWalletUC, listWalletUC: listWalletUC}
 }
 
 func (w *walletController) CreateWallet(c echo.Context) error {
@@ -39,4 +40,16 @@ func (w *walletController) CreateWallet(c echo.Context) error {
 	w.createWalletUC.Create(walletEntity)
 
 	return c.JSON(http.StatusOK, nil)
+}
+
+func (w *walletController) GetWalletInfo(c echo.Context) error {
+	walletId := c.Param("walletId")
+	documentNumber := c.Param("documentNumber")
+
+	wallet, err := w.listWalletUC.GetWalletInfo(walletId, documentNumber)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+	}
+
+	return c.JSON(http.StatusOK, wallet)
 }

@@ -13,6 +13,6 @@ func NewExtractUC(extractDatabase database.IExtractDatabase) extractWalletUC {
 	return extractWalletUC{extractDatabase: extractDatabase}
 }
 
-func (e *extractWalletUC) GetExtract(walletId string, documentNumber string, page int64, size int64) ([]entities.Extract, error) {
+func (e *extractWalletUC) GetExtract(walletId string, documentNumber string, page int, size int) ([]entities.Extract, error) {
 	return e.extractDatabase.GetExtract(walletId, documentNumber, page, size)
 }

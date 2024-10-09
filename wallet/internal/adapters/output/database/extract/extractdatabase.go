@@ -14,10 +14,10 @@ func NewExtract(db *sql.DB) IExtractDatabase {
 	return &extractDatabase{db: db}
 }
 
-func (e *extractDatabase) GetExtract(walletId string, documentNumber string, page int64, size int64) ([]entities.Extract, error) {
+func (e *extractDatabase) GetExtract(walletId string, documentNumber string, page int, size int) ([]entities.Extract, error) {
 	offset := (page - 1) * size
 
-	rows, err := e.db.Query("SELECT e.id, e.id_uuid, e.status, e.type, e.value, e.wallet_id "+
+	rows, err := e.db.Query("SELECT e.id, e.id_uuid, e.status_id, e.type_id, e.value, e.wallet_id "+
 		"FROM extracts e INNER JOIN wallets w ON w.id = e.wallet_id WHERE w.id = $1 AND w.document_number = $2 "+
 		"ORDER BY e.created_at desc LIMIT $3 OFFSET $4", walletId, documentNumber, size, offset)
 

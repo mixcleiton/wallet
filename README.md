@@ -39,7 +39,7 @@ equipe pode se concentrar em uma área específica da aplicação.
 
 ## Estrutura do Projeto
 
-![Estrutura](imagens/estrutura_projeto.png)
+![Estrutura](imagens/estrutura_projeto.PNG)
 
 Os projetos terão como estrutura o modelo apresentando acima.
 

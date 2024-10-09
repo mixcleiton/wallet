@@ -10,12 +10,13 @@ type WalletDatabase struct {
 	db *sql.DB
 }
 
-func NewWallet() IWalletDatabase {
-	return &WalletDatabase{}
+func NewWallet(db *sql.DB) IWalletDatabase {
+	return &WalletDatabase{db: db}
 }
 
 func (wd *WalletDatabase) Save(wallet entities.Wallet) error {
-	_, err := wd.db.Exec("INSERT INTO wallet(id, saldo, document_number, ) VALUES ()")
+	_, err := wd.db.Exec("INSERT INTO wallet(saldo, document_number, created_at, user, id_uuid) "+
+		"VALUES ($1, $2, $3, $4, $5)", wallet.Saldo, wallet.DocumentNumber, wallet.CreateAt, wallet.User, wallet.IdUUID)
 	if err != nil {
 		return err
 	}

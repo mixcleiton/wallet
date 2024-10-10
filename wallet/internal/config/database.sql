@@ -120,21 +120,38 @@ ALTER TABLE IF EXISTS public.event
     OWNER to root;
 
 INSERT INTO public.event_type(
-	name, description, example)
-	VALUES ('ADIÇÃO', 'Ação de incrementar o saldo da carteira', 'Depósitos bancários, transferências de outras carteiras, recebimento de pagamentos');
+	id, name, description, example)
+	VALUES (5, 'ADIÇÃO', 'Ação de incrementar o saldo da carteira', 'Depósitos bancários, transferências de outras carteiras, recebimento de pagamentos');
 
 INSERT INTO public.event_type(
-	name, description, example)
-	VALUES ('RETIRADA', 'Ação de diminuir o saldo da carteira', ' Saques em caixas eletrônicos, transferências para outras contas, pagamentos de contas');
+	id, name, description, example)
+	VALUES (6, 'RETIRADA', 'Ação de diminuir o saldo da carteira', ' Saques em caixas eletrônicos, transferências para outras contas, pagamentos de contas');
 
 INSERT INTO public.event_type(
-	name, description, example)
-	VALUES ('COMPRAS', 'Ação de utilizar o saldo da carteira para adquirir produtos ou serviços', 'Compras online, pagamentos em estabelecimentos físicos, assinaturas de serviços');
+	id, name, description, example)
+	VALUES (7, 'COMPRAS', 'Ação de utilizar o saldo da carteira para adquirir produtos ou serviços', 'Compras online, pagamentos em estabelecimentos físicos, assinaturas de serviços');
 
 INSERT INTO public.event_type(
-	name, description, example)
-	VALUES ('CANCELAMENTO', 'Ação de anular uma transação pendente ou em andamento', 'Cancelamento de uma compra online antes da entrega, cancelamento de uma assinatura');
+	id, name, description, example)
+	VALUES (8, 'CANCELAMENTO', 'Ação de anular uma transação pendente ou em andamento', 'Cancelamento de uma compra online antes da entrega, cancelamento de uma assinatura');
 
 INSERT INTO public.event_type(
-	name, description, example)
-	VALUES ('ESTORNO', 'Ação de devolver um valor já creditado em uma conta, geralmente devido a uma compra cancelada, erro na transação ou disputa', 'Estorno de uma compra por defeito no produto, estorno de um pagamento duplicado');
+	id, name, description, example)
+	VALUES (9, 'ESTORNO', 'Ação de devolver um valor já creditado em uma conta, geralmente devido a uma compra cancelada, erro na transação ou disputa', 'Estorno de uma compra por defeito no produto, estorno de um pagamento duplicado');
+
+
+INSERT INTO public.event_status(
+	id, name, description)
+	VALUES (1, 'AGUARDANDO_PROCESSAMENTO', 'evento que acabou de ser criado na base');
+
+INSERT INTO public.event_status(
+	id, name, description)
+	VALUES (2, 'PROCESSADO', 'evento que foi processado e está aguardando alguma tratativa');
+
+INSERT INTO public.event_status(
+	id, name, description)
+	VALUES (3, 'CONCLUIDO', 'evento que finalizou o fluxo de processamento');
+
+INSERT INTO public.event_status(
+	id, name, description)
+	VALUES (4, 'CANCELADO', 'Evento cancelado por outro evento, exemplo um estorno');

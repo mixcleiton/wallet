@@ -15,7 +15,7 @@ var (
 )
 
 type ProcessEvent interface {
-	ProcessEvent(idEvent int) error
+	ProcessEvent(event *entities.Event) error
 }
 
 type StatusEventProcess interface {
@@ -36,11 +36,10 @@ func NewProcessEventUC(eventDatabase database.EventDatabaseInterface, walletData
 	return processEventUC{eventDatabase: eventDatabase, walletDatabase: walletDatabase, kafkaProducer: kafkaProducer}
 }
 
-func (p *processEventUC) ProcessEvent(idEvent int) error {
-
-	event, err := p.eventDatabase.GetEventByID(idEvent)
+func (p *processEventUC) ProcessEvent(event *entities.Event) error {
+	event, err := p.eventDatabase.GetEventByUUID(event.IdUUID)
 	if err != nil {
-		log.Printf("não foi possível buscar o evento pelo id %d", idEvent)
+		log.Printf("não foi possível buscar o evento pelo id %d", &event.IdUUID)
 		return err
 	}
 
@@ -52,7 +51,7 @@ func (p *processEventUC) ProcessEvent(idEvent int) error {
 
 	err = processEvent.ProcessEvent(event)
 	if err != nil {
-		log.Printf("não foi possível processar o event de id %d, erro: %w", idEvent, err)
+		log.Printf("não foi possível processar o event de id %d, erro: %w", event.EventID, err)
 		return err
 	}
 
@@ -62,7 +61,7 @@ func (p *processEventUC) ProcessEvent(idEvent int) error {
 			return fmt.Errorf("erro ao converter para json o evento, erro %w", err)
 		}
 
-		p.kafkaProducer.Producer("process-event", string(body))
+		p.kafkaProducer.Producer("event-process", string(body))
 	}
 
 	return nil

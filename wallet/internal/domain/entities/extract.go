@@ -3,12 +3,12 @@ package entities
 import "time"
 
 type Extract struct {
-	Id        int64
+	Id        int
 	IdUUID    string
-	WalletId  int64
-	Type      int64
+	WalletId  int
+	Type      int
 	Value     float64
-	Status    int64
+	Status    int
 	CreateAt  time.Time
 	UpdatedAt time.Time
 }

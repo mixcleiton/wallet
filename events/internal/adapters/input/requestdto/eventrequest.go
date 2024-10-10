@@ -1,7 +1,7 @@
-package request
+package requestdto
 
 type EventRequest struct {
-	UUID        string  `json:"id_uuid"`
+	UUID        string  `json:"IdUUID"`
 	WalletUUID  string  `json:"wallet_uuid"`
 	Type        int     `json:"type_id"`
 	Value       float64 `json:"value"`

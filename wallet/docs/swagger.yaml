@@ -1,0 +1,147 @@
+basePath: /
+definitions:
+  request.WalletRequest:
+    properties:
+      documentNumber:
+        type: string
+      idUUID:
+        type: string
+    type: object
+  response.ExtractResponse:
+    properties:
+      createdAt:
+        type: string
+      idUuid:
+        type: string
+      status:
+        type: integer
+      type:
+        type: integer
+      value:
+        type: number
+      walletId:
+        type: integer
+    type: object
+  response.WalletResponse:
+    properties:
+      createAt:
+        type: string
+      documentNumber:
+        type: string
+      idUUID:
+        type: string
+      saldo:
+        type: number
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+host: localhost:8089
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server celler server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /api/v1/extract:
+    get:
+      consumes:
+      - application/json
+      description: Get wallet extract information
+      parameters:
+      - description: Wallet ID
+        in: query
+        name: walletId
+        required: true
+        type: string
+      - description: Document Number
+        in: query
+        name: documentNumber
+        required: true
+        type: string
+      - description: Page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Size
+        in: query
+        name: size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ExtractResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: Bad
+      summary: Get wallet extract
+      tags:
+      - extract
+  /api/v1/wallet:
+    post:
+      consumes:
+      - application/json
+      description: Post wallet information
+      parameters:
+      - description: Wallet Identification
+        in: body
+        name: wallet
+        required: true
+        schema:
+          $ref: '#/definitions/request.WalletRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            type: Bad
+      summary: Post wallet info
+      tags:
+      - wallet
+  /api/v1/wallet/{walletId}/{documentNumber}:
+    get:
+      consumes:
+      - application/json
+      description: Get wallet information
+      parameters:
+      - description: Wallet ID
+        in: path
+        name: walletId
+        required: true
+        type: string
+      - description: Document Number
+        in: path
+        name: documentNumber
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WalletResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: Bad
+      summary: Get wallet info
+      tags:
+      - wallet
+swagger: "2.0"

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"br.com.cleiton/events/internal/adapters/input/kafkainterfaces"
@@ -16,13 +17,15 @@ type CreateEventInterface interface {
 }
 
 type createEventUC struct {
-	eventDatabase database.EventDatabaseInterface
-	kafkaProducer kafkainterfaces.KafkaProducerInterface
+	eventDatabase  database.EventDatabaseInterface
+	walletDatabase database.WalletDatabaseInterface
+	kafkaProducer  kafkainterfaces.KafkaProducerInterface
 }
 
 func NewCreateEventUC(eventDatabase database.EventDatabaseInterface,
-	kafkaProducer kafkainterfaces.KafkaProducerInterface) createEventUC {
-	return createEventUC{eventDatabase: eventDatabase, kafkaProducer: kafkaProducer}
+	kafkaProducer kafkainterfaces.KafkaProducerInterface,
+	walletDatabase database.WalletDatabaseInterface) createEventUC {
+	return createEventUC{eventDatabase: eventDatabase, kafkaProducer: kafkaProducer, walletDatabase: walletDatabase}
 }
 
 func (c *createEventUC) CreateEvent(event entities.Event) error {
@@ -52,12 +55,27 @@ func (c *createEventUC) CreateEvent(event entities.Event) error {
 		event.EventID = originEvent.Id
 	}
 
+	wallet, err := c.walletDatabase.GetWalletByUUID(event.WalletUUID)
+	if err != nil {
+		return err
+	}
+
+	event.WalletId = wallet.Id
 	event.CreateAt = time.Now()
 	event.Status = 1
 
-	err := c.eventDatabase.CreateEvent(event)
-	if err != nil {
-		return fmt.Errorf("erro ao salvar evento, erro %w", err)
+	log.Println("eventId: ", event.EventID)
+
+	if event.EventID > 0 {
+		err := c.eventDatabase.CreateEvent(event)
+		if err != nil {
+			return fmt.Errorf("erro ao salvar evento, erro %w", err)
+		}
+	} else {
+		err := c.eventDatabase.CreateEventWithoutEventId(event)
+		if err != nil {
+			return fmt.Errorf("erro ao salvar evento, erro %w", err)
+		}
 	}
 
 	body, err := json.Marshal(event)
@@ -65,6 +83,6 @@ func (c *createEventUC) CreateEvent(event entities.Event) error {
 		return fmt.Errorf("erro ao converter para json o evento, erro %w", err)
 	}
 
-	c.kafkaProducer.Producer("process-event", string(body))
+	c.kafkaProducer.Producer("event-process", string(body))
 	return nil
 }

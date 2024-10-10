@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"fmt"
+	"log"
 
 	"br.com.cleiton/events/internal/adapters/output/database"
 	"br.com.cleiton/events/internal/domain/entities"
@@ -29,11 +30,19 @@ func (c *completedEventUC) ProcessEvent(event *entities.Event) error {
 		return fmt.Errorf("erro ao abrir transação no banco, erro %w", err)
 	}
 
-	err = c.eventDatabase.UpdateEventStatusByID(tx, event.Id, int(entities.COMPLETED))
+	log.Println("passou aqui", event.IdUUID)
+	eventToStatus, err := c.eventDatabase.GetEventByUUID(event.IdUUID)
+	if err != nil {
+		return fmt.Errorf("erro para recuperar o evento pelo UUID")
+	}
+
+	log.Println("passou aqui", eventToStatus.Id)
+	err = c.eventDatabase.UpdateEventStatusByID(tx, eventToStatus.Id, int(entities.COMPLETED))
 	if err != nil {
 		tx.Rollback()
 		return fmt.Errorf("erro para atualizar o status do evento id %d, erro %w", event.Id, err)
 	}
 
+	tx.Commit()
 	return nil
 }

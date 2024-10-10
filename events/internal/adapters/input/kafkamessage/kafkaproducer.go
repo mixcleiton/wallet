@@ -2,9 +2,11 @@ package kafkamessage
 
 import (
 	"fmt"
+	"log"
+	"os"
 
 	"br.com.cleiton/events/internal/config"
-	"github.com/IBM/sarama"
+	"github.com/Shopify/sarama"
 )
 
 type kafkaProducer struct {
@@ -16,13 +18,17 @@ func NewKafkaProducer(kafkaConfig config.KafkaConfig) *kafkaProducer {
 }
 
 func (p *kafkaProducer) Producer(topic string, message string) {
+
+	sarama.Logger = log.New(os.Stdout, "[sarama] ", log.LstdFlags)
 	config := sarama.NewConfig()
-	address := fmt.Sprintf("%s:%d", p.kafkaConfig.Host, p.kafkaConfig.Port)
-	producer, err := sarama.NewSyncProducer([]string{address}, config)
+	config.Producer.RequiredAcks = sarama.WaitForAll
+	config.Producer.Retry.Max = 5
+	config.Producer.Return.Successes = true
+
+	producer, err := sarama.NewSyncProducer([]string{"localhost:9092"}, config)
 	if err != nil {
 		panic(err)
 	}
-	defer producer.Close()
 
 	msg := &sarama.ProducerMessage{
 		Topic: topic,

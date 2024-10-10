@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"log"
 
 	"br.com.cleiton/events/internal/domain/entities"
 )
@@ -9,7 +10,7 @@ import (
 type WalletDatabaseInterface interface {
 	CountWalletByUUID(walletUUID string) (int, error)
 	GetWalletByUUID(walletUUID string) (*entities.Wallet, error)
-	UpdateWalletValueById(tx *sql.Tx, value float64, id int) (int, error)
+	UpdateWalletValueById(tx *sql.Tx, value float64, id int) (float64, error)
 }
 
 type walletDatabase struct {
@@ -39,10 +40,10 @@ func (w *walletDatabase) CountWalletByUUID(walletUUID string) (int, error) {
 }
 
 func (w *walletDatabase) GetWalletByUUID(walletUUID string) (*entities.Wallet, error) {
-	row := w.db.QueryRow("SELECT w.id, w.created_at, w.updated_at, w.document_number, w.id_uuid, w.saldo FROM wallet w WHERE w.id_uuid = $1", walletUUID)
+	row := w.db.QueryRow("SELECT w.id, w.created_at, w.document_number, w.id_uuid, w.saldo FROM wallet w WHERE w.id_uuid = $1", walletUUID)
 
 	var wallet entities.Wallet
-	err := row.Scan(&wallet.Id, &wallet.CreatedAt, &wallet.UpdatedAt, &wallet.DocumentNumber, &wallet.UUID, &wallet.Saldo)
+	err := row.Scan(&wallet.Id, &wallet.CreatedAt, &wallet.DocumentNumber, &wallet.UUID, &wallet.Saldo)
 	if err != nil {
 		return nil, err
 	}
@@ -50,10 +51,11 @@ func (w *walletDatabase) GetWalletByUUID(walletUUID string) (*entities.Wallet, e
 	return &wallet, err
 }
 
-func (w *walletDatabase) UpdateWalletValueById(tx *sql.Tx, value float64, id int) (int, error) {
-	var newValue int
-	err := tx.QueryRow("UPDATE wallet w SET w.saldo = w.saldo + $1 WHERE w.id = $2 RETURNING w.saldo ", value, id).Scan(&newValue)
+func (w *walletDatabase) UpdateWalletValueById(tx *sql.Tx, value float64, id int) (float64, error) {
+	var newValue float64
+	err := tx.QueryRow("UPDATE wallet SET saldo = saldo + $1 WHERE id = $2 RETURNING saldo ", value, id).Scan(&newValue)
 	if err != nil {
+		log.Fatal(err)
 		return 0, err
 	}
 

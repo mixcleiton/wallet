@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/spf13/viper"
 )
@@ -15,9 +16,9 @@ type DatabaseConfig struct {
 	DBName   string `mapstructure:"dbname"`
 }
 
-func LoadConfig(path string) (DatabaseConfig, error) {
-	var config DatabaseConfig
-
+func LoadConfig(path string) (*DatabaseConfig, error) {
+	var config *DatabaseConfig
+	log.Println(path)
 	viper.SetConfigFile(path)
 	viper.SetConfigType("yaml")
 

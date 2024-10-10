@@ -1,9 +1,11 @@
 package http
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
+	"br.com.cleiton/wallet/internal/adapters/input/http/response"
 	"br.com.cleiton/wallet/internal/domain/ports"
 	"github.com/labstack/echo/v4"
 )
@@ -21,10 +23,13 @@ func NewExtractController(extractWalletUC ports.ExtractWallet) *extractControlle
 // @Tags        extract
 // @Accept      json
 // @Produce     json
-// @Param       Pet body pet.Pet true "Pet object that needs to be added to the store"
-// @Success     200 {object} []
+// @Param walletId query string true "Wallet ID"
+// @Param documentNumber query string true "Document Number"
+// @Param page query int true "Page"
+// @Param size query int true "Size"
+// @Success     200 {object} response.ExtractResponse
 // @Failure     400 Bad Request
-// @Router       /wallet/:walletId/:documentNumber [get]
+// @Router      /api/v1/extract [get]
 func (e *extractController) GenerateExtract(c echo.Context) error {
 
 	walletId := c.QueryParam("walletId")
@@ -40,8 +45,22 @@ func (e *extractController) GenerateExtract(c echo.Context) error {
 
 	extracts, err := e.extractWalletUC.GetExtract(walletId, documentNumber, page, size)
 	if err != nil {
+		log.Printf("erro ao buscar extrato, erro %s", err)
 		return c.JSON(http.StatusBadRequest, err)
 	}
 
-	return c.JSON(http.StatusOK, extracts)
+	extractsResponse := []response.ExtractResponse{}
+	for _, extract := range extracts {
+		extractResponse := response.ExtractResponse{
+			IdUUID:    extract.IdUUID,
+			Status:    extract.Status,
+			Value:     extract.Value,
+			Type:      extract.Type,
+			CreatedAt: extract.CreateAt.Format("2006-01-02"),
+		}
+
+		extractsResponse = append(extractsResponse, extractResponse)
+	}
+
+	return c.JSON(http.StatusOK, extractsResponse)
 }

@@ -18,8 +18,9 @@ func (e *extractDatabase) GetExtract(walletId string, documentNumber string, pag
 	offset := (page - 1) * size
 
 	rows, err := e.db.Query("SELECT evt.id, evt.type_id, evt.value, evt.created_at "+
-		"FROM extract e INNER JOIN wallet w ON w.id = e.wallet_id "+
-		"INNER JOIN event evt ON evt.wallet_id = w.id "+
+		"FROM extract e "+
+		"INNER JOIN event evt ON evt.id = e.event_id "+
+		"INNER JOIN wallet w ON w.id = evt.wallet_id "+
 		"WHERE w.id = $1 AND w.document_number = $2 "+
 		"ORDER BY e.created_at desc LIMIT $3 OFFSET $4", walletId, documentNumber, size, offset)
 

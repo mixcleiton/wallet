@@ -13,6 +13,10 @@ type kafkaProducer struct {
 	kafkaConfig config.KafkaConfig
 }
 
+type KafkaProducerInterface interface {
+	Producer(topic string, message string)
+}
+
 func NewKafkaProducer(kafkaConfig config.KafkaConfig) *kafkaProducer {
 	return &kafkaProducer{kafkaConfig: kafkaConfig}
 }

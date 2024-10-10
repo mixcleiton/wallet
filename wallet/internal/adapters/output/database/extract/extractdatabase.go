@@ -17,8 +17,10 @@ func NewExtract(db *sql.DB) IExtractDatabase {
 func (e *extractDatabase) GetExtract(walletId string, documentNumber string, page int, size int) ([]entities.Extract, error) {
 	offset := (page - 1) * size
 
-	rows, err := e.db.Query("SELECT e.id, e.id_uuid, e.status_id, e.type_id, e.value, e.wallet_id "+
-		"FROM extracts e INNER JOIN wallets w ON w.id = e.wallet_id WHERE w.id = $1 AND w.document_number = $2 "+
+	rows, err := e.db.Query("SELECT evt.id, evt.type_id, evt.value, evt.created_at "+
+		"FROM extract e INNER JOIN wallet w ON w.id = e.wallet_id "+
+		"INNER JOIN event evt ON evt.wallet_id = w.id "+
+		"WHERE w.id = $1 AND w.document_number = $2 "+
 		"ORDER BY e.created_at desc LIMIT $3 OFFSET $4", walletId, documentNumber, size, offset)
 
 	if err != nil {
@@ -30,7 +32,7 @@ func (e *extractDatabase) GetExtract(walletId string, documentNumber string, pag
 	var extracts []entities.Extract
 	for rows.Next() {
 		var extract entities.Extract
-		err := rows.Scan(&extract.Id, &extract.IdUUID, &extract.Status, &extract.Type, &extract.Value, &extract.WalletId)
+		err := rows.Scan(&extract.Id, &extract.Type, &extract.Value, &extract.CreateAt)
 		if err != nil {
 			return nil, err
 		}

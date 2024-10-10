@@ -23,17 +23,18 @@ type StatusEventProcess interface {
 }
 
 type processEventUC struct {
-	eventDatabase  database.EventDatabaseInterface
-	walletDatabase database.WalletDatabaseInterface
-	kafkaProducer  kafkainterfaces.KafkaProducerInterface
+	eventDatabase   database.EventDatabaseInterface
+	walletDatabase  database.WalletDatabaseInterface
+	kafkaProducer   kafkainterfaces.KafkaProducerInterface
+	extractDatabase database.ExtractDatabaseInterface
 }
 
 func NewProcessEventUC(eventDatabase database.EventDatabaseInterface, walletDatabase database.WalletDatabaseInterface,
-	kafkaProducer kafkainterfaces.KafkaProducerInterface) processEventUC {
-	statusEventProcessMap[entities.WAITING_PROCESS] = NewWaitingProcessUC(eventDatabase, walletDatabase)
+	kafkaProducer kafkainterfaces.KafkaProducerInterface, extractDatabase database.ExtractDatabaseInterface) processEventUC {
+	statusEventProcessMap[entities.WAITING_PROCESS] = NewWaitingProcessUC(eventDatabase, walletDatabase, extractDatabase)
 	statusEventProcessMap[entities.PROCESSED] = NewCompletedEventUC(eventDatabase, walletDatabase)
 
-	return processEventUC{eventDatabase: eventDatabase, walletDatabase: walletDatabase, kafkaProducer: kafkaProducer}
+	return processEventUC{eventDatabase: eventDatabase, walletDatabase: walletDatabase, kafkaProducer: kafkaProducer, extractDatabase: extractDatabase}
 }
 
 func (p *processEventUC) ProcessEvent(event *entities.Event) error {

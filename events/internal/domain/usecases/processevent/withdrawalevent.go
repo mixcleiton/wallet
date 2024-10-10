@@ -8,13 +8,15 @@ import (
 )
 
 type withdrawalEvent struct {
-	eventDatabase  database.EventDatabaseInterface
-	walletDatabase database.WalletDatabaseInterface
+	eventDatabase   database.EventDatabaseInterface
+	walletDatabase  database.WalletDatabaseInterface
+	extractDatabase database.ExtractDatabaseInterface
 }
 
 func NewWithdrawalEvent(eventDatabase database.EventDatabaseInterface,
-	walletDatabase database.WalletDatabaseInterface) *withdrawalEvent {
-	return &withdrawalEvent{eventDatabase: eventDatabase, walletDatabase: walletDatabase}
+	walletDatabase database.WalletDatabaseInterface,
+	extractDatabase database.ExtractDatabaseInterface) *withdrawalEvent {
+	return &withdrawalEvent{eventDatabase: eventDatabase, walletDatabase: walletDatabase, extractDatabase: extractDatabase}
 }
 
 func (w *withdrawalEvent) ProcessEvent(event entities.Event) error {
@@ -39,6 +41,12 @@ func (w *withdrawalEvent) ProcessEvent(event entities.Event) error {
 	if err != nil {
 		tx.Rollback()
 		return fmt.Errorf("erro ao alterar o status do event para processado. erro %w", err)
+	}
+
+	err = w.extractDatabase.CreateExtract(tx, event.Id)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("erro ao criar extrato, %w", err)
 	}
 
 	err = tx.Commit()

@@ -8,13 +8,15 @@ import (
 )
 
 type shoppingEvent struct {
-	eventDatabase  database.EventDatabaseInterface
-	walletDatabase database.WalletDatabaseInterface
+	eventDatabase   database.EventDatabaseInterface
+	walletDatabase  database.WalletDatabaseInterface
+	extractDatabase database.ExtractDatabaseInterface
 }
 
 func NewShoppingEvent(eventDatabase database.EventDatabaseInterface,
-	walletDatabase database.WalletDatabaseInterface) *shoppingEvent {
-	return &shoppingEvent{eventDatabase: eventDatabase, walletDatabase: walletDatabase}
+	walletDatabase database.WalletDatabaseInterface,
+	extractDatabase database.ExtractDatabaseInterface) *shoppingEvent {
+	return &shoppingEvent{eventDatabase: eventDatabase, walletDatabase: walletDatabase, extractDatabase: extractDatabase}
 }
 
 func (s *shoppingEvent) ProcessEvent(event entities.Event) error {
@@ -40,6 +42,12 @@ func (s *shoppingEvent) ProcessEvent(event entities.Event) error {
 	if err != nil {
 		tx.Rollback()
 		return fmt.Errorf("erro ao alterar o status do event para processado. erro %w", err)
+	}
+
+	err = s.extractDatabase.CreateExtract(tx, event.Id)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("erro ao criar extrato, %w", err)
 	}
 
 	err = tx.Commit()

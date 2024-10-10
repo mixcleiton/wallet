@@ -10,8 +10,9 @@ import (
 )
 
 type waitingProcessUC struct {
-	eventDatabase  database.EventDatabaseInterface
-	walletDatabase database.WalletDatabaseInterface
+	eventDatabase   database.EventDatabaseInterface
+	walletDatabase  database.WalletDatabaseInterface
+	extractDatabase database.ExtractDatabaseInterface
 }
 
 var (
@@ -19,12 +20,13 @@ var (
 )
 
 func NewWaitingProcessUC(eventDatabase database.EventDatabaseInterface,
-	walletDatabase database.WalletDatabaseInterface) *waitingProcessUC {
-	eventProcessMap[entities.ADD] = processevent.NewAddEvent(eventDatabase, walletDatabase)
-	eventProcessMap[entities.CANCELLATION] = processevent.NewCancellationEvent(eventDatabase, walletDatabase)
-	eventProcessMap[entities.REVERSAL] = processevent.NewReversalEvent(eventDatabase, walletDatabase)
-	eventProcessMap[entities.SHOPPING] = processevent.NewShoppingEvent(eventDatabase, walletDatabase)
-	eventProcessMap[entities.WITHDRAWAL] = processevent.NewWithdrawalEvent(eventDatabase, walletDatabase)
+	walletDatabase database.WalletDatabaseInterface,
+	extractDatabase database.ExtractDatabaseInterface) *waitingProcessUC {
+	eventProcessMap[entities.ADD] = processevent.NewAddEvent(eventDatabase, walletDatabase, extractDatabase)
+	eventProcessMap[entities.CANCELLATION] = processevent.NewCancellationEvent(eventDatabase, walletDatabase, extractDatabase)
+	eventProcessMap[entities.REVERSAL] = processevent.NewReversalEvent(eventDatabase, walletDatabase, extractDatabase)
+	eventProcessMap[entities.SHOPPING] = processevent.NewShoppingEvent(eventDatabase, walletDatabase, extractDatabase)
+	eventProcessMap[entities.WITHDRAWAL] = processevent.NewWithdrawalEvent(eventDatabase, walletDatabase, extractDatabase)
 
 	return &waitingProcessUC{eventDatabase: eventDatabase, walletDatabase: walletDatabase}
 }

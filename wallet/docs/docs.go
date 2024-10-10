@@ -71,7 +71,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ExtractResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/response.ExtractResponse"
+                            }
                         }
                     },
                     "400": {

@@ -8,13 +8,15 @@ import (
 )
 
 type reversalEvent struct {
-	eventDatabase  database.EventDatabaseInterface
-	walletDatabase database.WalletDatabaseInterface
+	eventDatabase   database.EventDatabaseInterface
+	walletDatabase  database.WalletDatabaseInterface
+	extractDatabase database.ExtractDatabaseInterface
 }
 
 func NewReversalEvent(eventDatabase database.EventDatabaseInterface,
-	walletDatabase database.WalletDatabaseInterface) *reversalEvent {
-	return &reversalEvent{eventDatabase: eventDatabase, walletDatabase: walletDatabase}
+	walletDatabase database.WalletDatabaseInterface,
+	extractDatabase database.ExtractDatabaseInterface) *reversalEvent {
+	return &reversalEvent{eventDatabase: eventDatabase, walletDatabase: walletDatabase, extractDatabase: extractDatabase}
 }
 
 func (r *reversalEvent) ProcessEvent(event entities.Event) error {
@@ -38,6 +40,12 @@ func (r *reversalEvent) ProcessEvent(event entities.Event) error {
 	if err != nil {
 		tx.Rollback()
 		return fmt.Errorf("erro ao alterar o status do event para processado. erro %w", err)
+	}
+
+	err = r.extractDatabase.CreateExtract(tx, event.Id)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("erro ao criar extrato, %w", err)
 	}
 
 	err = tx.Commit()

@@ -31,7 +31,7 @@ func NewCreateEventUC(eventDatabase database.EventDatabaseInterface,
 func (c *createEventUC) CreateEvent(event entities.Event) error {
 
 	if event.IdUUID == "" {
-		return errors.New("identificação da carteira é obrigatório")
+		return errors.New("identificação da evento é obrigatório")
 	}
 
 	if event.WalletUUID == "" {

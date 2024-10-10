@@ -42,16 +42,17 @@ func StartEvents() {
 
 	walletDatabase := database.NewWalletDatabase(db)
 	eventDatabase := database.NewEventDatabase(db)
+	extractDatabase := database.NewExtractDatabase(db)
+
 	createEventUC := usecases.NewCreateEventUC(&eventDatabase, kafkaProducer, &walletDatabase)
 	eventController := controller.NewEventController(&createEventUC)
 
-	processEventUC := usecases.NewProcessEventUC(&eventDatabase, &walletDatabase, kafkaProducer)
+	processEventUC := usecases.NewProcessEventUC(&eventDatabase, &walletDatabase, kafkaProducer, &extractDatabase)
 
 	kafkaConsumer := kafkamessage.NewKafkaConsumer(kafkaConfig, &processEventUC)
 	kafkaConsumer.LoadReadMessages()
 
 	g := e.Group("/api/v1")
-
 	g.POST("/event", eventController.CreateEvent)
 
 	e.Logger.Fatal(e.Start(":8081"))

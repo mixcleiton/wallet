@@ -54,3 +54,24 @@ Os projetos terão como estrutura o modelo apresentando acima.
 <strong>config:</strong> Contém configurações da aplicação.  
 <strong>cmd:</strong> Contém os comandos da aplicação, como o servidor HTTP.  
 <strong>main.go:</strong> Ponto de entrada da aplicação.  
+
+## Banco de dados
+![Estrutura](imagens/representacao_base.png)
+
+## Arquitetura do Projeto
+
+![Arquitetura](imagens/arquitetura.png)
+
+O sistema é composto por dois projetos de micro serviço, um de carteira e extrato e outro de eventos:  
+<strong>Wallet (Carteira Digital) -</strong> disponibiliza o o serviços para criar e buscar informações de uma carteira  
+<strong>Extract (Extrato) -</strong> busca as informações de extrato de uma carteira  
+<strong>Event (Eventos) - </strong>esse projeto é composto por dois tipos de processamento, o primeiro, receber o estimulo de um novo processamento via api rest, validando inicialmente e salvando as informações na base, devolvendo uma resposta para o cliente e criando uma mensagem no kafka, para dar sequência no processamento de forma assincrona.
+A segunda é justamente, dar sequência no processamento do fluxo.
+
+## Swagger
+
+para consumo do serviços, pode ser utilizado as páginas de swagger abaixo:
+
+<strong>wallet e extract</strong> - http://127.0.0.1:8089/swagger/index.html
+<strong>event</strong> - http://127.0.0.1:8081/swagger/index.html
+

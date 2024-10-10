@@ -59,7 +59,7 @@ func StartEvents() {
 
 func configDB(databaseConfig config.DatabaseConfig) string {
 	urlDb := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		"localhost", 5432, "root", "wallettest", "postgres")
+		"host.docker.internal", 5432, "root", "wallettest", "postgres")
 
 	log.Println(urlDb)
 	return urlDb

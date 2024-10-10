@@ -25,7 +25,7 @@ func (p *kafkaProducer) Producer(topic string, message string) {
 	config.Producer.Retry.Max = 5
 	config.Producer.Return.Successes = true
 
-	producer, err := sarama.NewSyncProducer([]string{"localhost:9092"}, config)
+	producer, err := sarama.NewSyncProducer([]string{"kafka:9092"}, config)
 	if err != nil {
 		panic(err)
 	}

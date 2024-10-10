@@ -35,7 +35,7 @@ func (k *kafkaConsumer) LoadReadMessages() {
 
 	addressKafka := fmt.Sprintf("%s:%d", k.kafkaConfig.Host, k.kafkaConfig.Port)
 	log.Println("address kafka" + addressKafka)
-	consumer, err := sarama.NewConsumer([]string{"localhost:9092"}, config)
+	consumer, err := sarama.NewConsumer([]string{"kafka:9092"}, config)
 
 	if err != nil {
 		panic(err)

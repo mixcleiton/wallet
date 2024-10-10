@@ -82,7 +82,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ExtractResponse'
+            items:
+              $ref: '#/definitions/response.ExtractResponse'
+            type: array
         "400":
           description: Bad Request
           schema:

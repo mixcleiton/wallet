@@ -21,7 +21,7 @@ func (e *extractDatabase) GetExtract(walletId string, documentNumber string, pag
 		"FROM extract e "+
 		"INNER JOIN event evt ON evt.id = e.event_id "+
 		"INNER JOIN wallet w ON w.id = evt.wallet_id "+
-		"WHERE w.id = $1 AND w.document_number = $2 "+
+		"WHERE w.id_uuid = $1 AND w.document_number = $2 "+
 		"ORDER BY e.created_at desc LIMIT $3 OFFSET $4", walletId, documentNumber, size, offset)
 
 	if err != nil {

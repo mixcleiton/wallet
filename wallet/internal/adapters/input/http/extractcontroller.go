@@ -27,7 +27,7 @@ func NewExtractController(extractWalletUC ports.ExtractWallet) *extractControlle
 // @Param documentNumber query string true "Document Number"
 // @Param page query int true "Page"
 // @Param size query int true "Size"
-// @Success     200 {object} response.ExtractResponse
+// @Success     200 {object} []response.ExtractResponse
 // @Failure     400 Bad Request
 // @Router      /api/v1/extract [get]
 func (e *extractController) GenerateExtract(c echo.Context) error {
@@ -49,9 +49,10 @@ func (e *extractController) GenerateExtract(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, err)
 	}
 
-	extractsResponse := []response.ExtractResponse{}
+	extractsResponse := make([]*response.ExtractResponse, 0)
 	for _, extract := range extracts {
-		extractResponse := response.ExtractResponse{
+		log.Println(extract.IdUUID)
+		extractResponse := &response.ExtractResponse{
 			IdUUID:    extract.IdUUID,
 			Status:    extract.Status,
 			Value:     extract.Value,

@@ -52,14 +52,15 @@ func (p *processEventUC) ProcessEvent(event *entities.Event) error {
 
 	err = processEvent.ProcessEvent(event)
 	if err != nil {
-		log.Printf("não foi possível processar o event de id %d, erro: %w", event.EventID, err)
+		log.Printf("não foi possível processar o event de id %d, erro: %s", event.EventID, err.Error())
 		return err
 	}
 
-	if event.Status != int(entities.COMPLETED) || event.Status != int(entities.CANCELED) {
+	log.Println("passou aqui")
+	if event.Status != int(entities.COMPLETED) && event.Status != int(entities.CANCELED) {
 		body, err := json.Marshal(event)
 		if err != nil {
-			return fmt.Errorf("erro ao converter para json o evento, erro %w", err)
+			return fmt.Errorf("erro ao converter para json o evento, erro %s", err.Error())
 		}
 
 		p.kafkaProducer.Producer("event-process", string(body))
